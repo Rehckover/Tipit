@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <variable
+            name="v"
+            type="android.view.View" />
+
+        <variable
+            name="activity"
+            type="com.android.tipitdemoapp.CameraPreviewActivity" />
+    </data>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.android.tipitdemoapp.CameraPreviewActivity">
+
+        <io.fotoapparat.view.CameraView
+            android:id="@+id/camera_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="@{!activity.mode ? v.VISIBLE : v.INVISIBLE}"
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/rgb_preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:scaleType="centerCrop"
+            android:visibility="@{activity.mode ? v.VISIBLE : v.INVISIBLE}" />
+
+        <TextView
+            android:id="@+id/mode_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/mode"
+            android:layout_alignTop="@+id/mode"
+            android:layout_centerHorizontal="true"
+            android:layout_marginRight="16dp"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:visibility="visible" />
+
+        <Switch
+            android:id="@+id/mode"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="30dp"
+            android:layout_toRightOf="@+id/mode_type"
+            android:checked="@={activity.mode}"
+            android:visibility="visible" />
+    </RelativeLayout>
+</layout>
