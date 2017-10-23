@@ -46,7 +46,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
         binding.setActivity(this);
         mRs = RenderScript.create(this);
 //        backFotoapparat = createFotoapparat(LensPosition.BACK);
-        processImageTensorflowly(binding.rgbPreview);
+        processImageTensorflowly();
     }
 
     private Fotoapparat createFotoapparat(LensPosition position) {
@@ -85,7 +85,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
         }
     }
 
-    public void processImageTensorflowly(View view) {
+    public void processImageTensorflowly() {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap realImage = BitmapFactory.decodeResource(getResources(), R.drawable.man_picture, options);
@@ -102,12 +102,12 @@ public class CameraPreviewActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        backFotoapparat.start();
+//        backFotoapparat.start();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        backFotoapparat.stop();
+//        backFotoapparat.stop();
     }
 }
