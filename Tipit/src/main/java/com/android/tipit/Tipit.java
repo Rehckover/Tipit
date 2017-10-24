@@ -3,6 +3,7 @@ package com.android.tipit;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 
 import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
 
@@ -12,8 +13,12 @@ import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
 
 public class Tipit {
 
-    private static Tipit instacne;
+    /**
+     * Tipit can be used as singleton module class
+     * but static method can be called without instance creation.
+     */
 
+    private static Tipit instacne;
     private static final int WIDTH = 640;
     private static final int HEIGHT = 480;
     private static final String MODEL_FILE = "file:///android_asset/constant_graph_weights.pb";
@@ -23,6 +28,15 @@ public class Tipit {
     private float[] floatValues = new float[WIDTH * HEIGHT * 3];
     private TensorFlowInferenceInterface tensorflow;
 
+
+    /**
+     * Draw 10 pixels rectangle depends on input position.
+     * Rectangle will be centered to initial coordinates.
+     *
+     * @param bitmap
+     * @param x      initial x position
+     * @param y      intial y position
+     */
     public static void drawRectangleOnBitmap(Bitmap bitmap, int x, int y) {
         int x1 = x + 10;
         int y1 = y + 10;
@@ -37,7 +51,7 @@ public class Tipit {
         initTensorflow(context);
     }
 
-    public static Tipit getInstacne(Context context) {
+    public static Tipit getInstance(@NonNull Context context) {
         if (instacne == null) {
             instacne = new Tipit(context);
         }
@@ -54,8 +68,13 @@ public class Tipit {
         }
     }
 
-    public void processImageWithTensorFlow(Context context, final Bitmap bitmap) {
-        initTensorflow(context);
+    /**
+     * Process image as bitmap using tesnorflow model file located in library assets folder.
+     *
+     * @param bitmap  is rgba format with max size 640x480
+     */
+
+    public void processImageWithTensorFlow(final Bitmap bitmap) {
         bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
 
         for (int i = 0; i < intValues.length; ++i) {
@@ -81,8 +100,5 @@ public class Tipit {
 
 
         bitmap.setPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
-
     }
-
-
 }

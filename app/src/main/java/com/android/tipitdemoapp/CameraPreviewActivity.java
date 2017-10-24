@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.renderscript.RenderScript;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import com.android.tipit.Tipit;
@@ -44,7 +43,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_camera_preview);
         binding.setActivity(this);
-        tipit = Tipit.getInstacne(this);
+        tipit = Tipit.getInstance(this);
         mRs = RenderScript.create(this);
         backFotoapparat = createFotoapparat(LensPosition.BACK);
         setListeners();
@@ -91,7 +90,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
             if (!getModeType()) {
                 Tipit.drawRectangleOnBitmap(rgbBitmap, rgbBitmap.getWidth() / 2, rgbBitmap.getHeight() / 2);
             } else {
-                tipit.processImageWithTensorFlow(CameraPreviewActivity.this, rgbBitmap);
+                tipit.processImageWithTensorFlow(rgbBitmap);
             }
             runOnUiThread(() ->
                     binding.rgbPreview.setImageBitmap(rgbBitmap)
