@@ -3,13 +3,11 @@ package com.android.tipitdemoapp;
 import android.databinding.DataBindingUtil;
 import android.databinding.ObservableBoolean;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
 import android.renderscript.RenderScript;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import com.android.tipit.Tipit;
@@ -33,10 +31,12 @@ public class CameraPreviewActivity extends AppCompatActivity {
     private static final String TAG = CameraPreviewActivity.class.getSimpleName();
     private static final int WIDTH = 480;
     private static final int HEIGHT = 640;
-    public ObservableBoolean mode = new ObservableBoolean();
+    public volatile ObservableBoolean mode = new ObservableBoolean();
+    private boolean modeType;
     ActivityCameraPreviewBinding binding;
 
     private Fotoapparat backFotoapparat;
+    private Tipit tipit;
     private RenderScript mRs;
 
     @Override
@@ -44,9 +44,24 @@ public class CameraPreviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_camera_preview);
         binding.setActivity(this);
+        tipit = Tipit.getInstacne(this);
         mRs = RenderScript.create(this);
-//        backFotoapparat = createFotoapparat(LensPosition.BACK);
-        processImageTensorflowly();
+        backFotoapparat = createFotoapparat(LensPosition.BACK);
+        setListeners();
+    }
+
+    private void setListeners() {
+        binding.mode.setOnCheckedChangeListener((compoundButton, checked) -> {
+            setModeType(checked);
+        });
+    }
+
+    private synchronized boolean getModeType() {
+        return modeType;
+    }
+
+    private synchronized void setModeType(boolean modeType) {
+        this.modeType = modeType;
     }
 
     private Fotoapparat createFotoapparat(LensPosition position) {
@@ -73,41 +88,26 @@ public class CameraPreviewActivity extends AppCompatActivity {
         public void processFrame(Frame frame) {
             Log.d(TAG, "processFrame: Frame");
             Bitmap rgbBitmap = RenderScriptHelper.convertYuvToRgbIntrinsic(mRs, frame.image, WIDTH, HEIGHT);
-//            Tipit.drawRectangleOnBitmap(rgbBitmap, rgbBitmap.getWidth() / 2, rgbBitmap.getHeight() / 2);
-            Bitmap scaledBitmap = Bitmap.createScaledBitmap(rgbBitmap, HEIGHT,
-                    WIDTH, false);
-
-            Tipit tipit = new Tipit();
-//            tipit.processImageWithTensorFlow(CameraPreviewActivity.this, scaledBitmap);
+            if (!getModeType()) {
+                Tipit.drawRectangleOnBitmap(rgbBitmap, rgbBitmap.getWidth() / 2, rgbBitmap.getHeight() / 2);
+            } else {
+                tipit.processImageWithTensorFlow(CameraPreviewActivity.this, rgbBitmap);
+            }
             runOnUiThread(() ->
                     binding.rgbPreview.setImageBitmap(rgbBitmap)
             );
         }
     }
 
-    public void processImageTensorflowly() {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap realImage = BitmapFactory.decodeResource(getResources(), R.drawable.man_picture, options);
-        Log.d(TAG, "processImageTensorflowly: real Image size: " + realImage.getWidth() + " : " + realImage.getHeight());
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(realImage, HEIGHT,
-                WIDTH, false);
-        Log.d(TAG, "processImageTensorflowly: real image after scale" + scaledBitmap.getWidth() + " : " + scaledBitmap.getHeight());
-        Tipit tipit = new Tipit();
-        tipit.processImageWithTensorFlow(this, scaledBitmap);
-        binding.rgbPreview.setImageBitmap(scaledBitmap);
-    }
-
-
     @Override
     protected void onStart() {
         super.onStart();
-//        backFotoapparat.start();
+        backFotoapparat.start();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-//        backFotoapparat.stop();
+        backFotoapparat.stop();
     }
 }

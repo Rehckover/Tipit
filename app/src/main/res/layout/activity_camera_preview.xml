@@ -22,16 +22,14 @@
             android:id="@+id/camera_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="@{!activity.mode ? v.VISIBLE : v.INVISIBLE}"
-            tools:visibility="visible" />
+            tools:visibility="invisible" />
 
         <ImageView
             android:id="@+id/rgb_preview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
-            android:scaleType="centerCrop"
-            android:visibility="@{activity.mode ? v.VISIBLE : v.INVISIBLE}" />
+            android:scaleType="centerCrop" />
 
         <TextView
             android:id="@+id/mode_type"
@@ -52,7 +50,6 @@
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="30dp"
             android:layout_toRightOf="@+id/mode_type"
-            android:checked="@={activity.mode}"
             android:visibility="visible" />
     </RelativeLayout>
 </layout>

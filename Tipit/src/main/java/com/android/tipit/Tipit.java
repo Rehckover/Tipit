@@ -12,6 +12,8 @@ import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
 
 public class Tipit {
 
+    private static Tipit instacne;
+
     private static final int WIDTH = 640;
     private static final int HEIGHT = 480;
     private static final String MODEL_FILE = "file:///android_asset/constant_graph_weights.pb";
@@ -31,16 +33,29 @@ public class Tipit {
         }
     }
 
+    private Tipit(Context context) {
+        initTensorflow(context);
+    }
+
+    public static Tipit getInstacne(Context context) {
+        if (instacne == null) {
+            instacne = new Tipit(context);
+        }
+        return instacne;
+    }
+
     public void Tipit(Context context) {
-        init(context);
+        initTensorflow(context);
     }
 
-    private void init(Context context) {
-        tensorflow = new TensorFlowInferenceInterface(context.getAssets(), MODEL_FILE);
+    private void initTensorflow(Context context) {
+        if (tensorflow == null) {
+            tensorflow = new TensorFlowInferenceInterface(context.getAssets(), MODEL_FILE);
+        }
     }
 
-    public void processImageWithTensorFlow(Context context,final Bitmap bitmap) {
-        tensorflow = new TensorFlowInferenceInterface(context.getAssets(), MODEL_FILE);
+    public void processImageWithTensorFlow(Context context, final Bitmap bitmap) {
+        initTensorflow(context);
         bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
 
         for (int i = 0; i < intValues.length; ++i) {
